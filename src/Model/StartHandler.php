@@ -14,15 +14,13 @@ class StartHandler
         }
 
         $param = substr($message->getText(), strlen('/start '));
+        $message->startSession($param ?? '');
+
         $start = TelegramBotStartGateway::instance()
             ->whereBy('param', $param)
             ->select('answer')
             ->select('id')
             ->first();
-
-        if (!empty($start)) {
-            $message->startSession($start['id']);
-        }
 
         if (!empty($start['answer'])) {
             return $message->answer($start['answer'])->getMessageId();

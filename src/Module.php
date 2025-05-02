@@ -22,8 +22,6 @@ class Module implements ModuleInterface
     public function __construct()
     {
         TransportRegistry::set('telegram', new Notification\Transport());
-        MessageEvent::subscribe(App::load(FloodHandler::class), Event::PRIORITY_LOW);
-        MessageEvent::subscribe(App::load(StartHandler::class), Event::PRIORITY_HIGH);
     }
 
     public function getPath()

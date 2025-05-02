@@ -152,13 +152,13 @@ class MessageEvent extends Event
         return $parentIds;
     }
 
-    public function startSession($startId)
+    public function startSession(string $param)
     {
         $session = [
-            'telegram_bot_start_id' => $startId,
             'telegram_bot_id' => $this->getBotId(),
             'chat_id' => $this->getChatId(),
             'user_id' => $this->getUserId(),
+            'param' => $param,
             'username' => $this->getUsername(),
         ];
         $this->sessionId = TelegramBotSessionGateway::instance()->insertGetId($session);

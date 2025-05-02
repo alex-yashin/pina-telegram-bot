@@ -23,7 +23,8 @@ class TelegramBotSessionGateway extends TableDataGateway
         $schema->add('chat_id', 'ID Чата', TokenType::class)->setMandatory();
         $schema->add('user_id', 'ID Пользователя в телеграме', TokenType::class)->setMandatory();
         $schema->addKey(['telegram_bot_id', 'chat_id', 'user_id']);
-        $schema->add('telegram_bot_start_id', 'Входная точка', IntegerType::class)->setNullable();
+
+        $schema->add('param', 'Код параметра /start', TokenType::class)->setMandatory();
         $schema->add('username', 'Пользователь', TokenType::class)->setMandatory();
         $schema->addCreatedAt();
         return $schema;

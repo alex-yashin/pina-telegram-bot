@@ -33,8 +33,7 @@ class ChatRegistrationHandler
             'chat_id' => $message->getChatId(),
         ]);
 
-        $answer = $message->answer('Мы можем использовать этот чат для отправки уведомлений из личного кабинета. Сделайте отметку в личном кабинете и уведомления будут приходиться сюда.');
-        return $answer->getMessageId();
+        return false;
     }
 
     protected function registerGroup(MessageEvent $message): bool
