@@ -5,10 +5,9 @@ namespace PinaTelegramBot\Collections;
 
 use Pina\Data\DataCollection;
 use Pina\Data\Schema;
+use Pina\Events\QueueableCommand;
 use PinaTelegramBot\Commands\InstallTelegramWebhook;
 use PinaTelegramBot\SQL\TelegramBotGateway;
-
-use function Pina\Events\queue;
 
 class TelegramBotCollection  extends DataCollection
 {
@@ -26,7 +25,7 @@ class TelegramBotCollection  extends DataCollection
     {
         $id = parent::add($data, $context);
 
-        $webhookInstallator = queue(InstallTelegramWebhook::class);
+        $webhookInstallator = new QueueableCommand(InstallTelegramWebhook::class);
         $webhookInstallator($id);
 
         return $id;
@@ -36,7 +35,7 @@ class TelegramBotCollection  extends DataCollection
     {
         $id = parent::update($id, $data, $context, $fields);
 
-        $webhookInstallator = queue(InstallTelegramWebhook::class);
+        $webhookInstallator = new QueueableCommand(InstallTelegramWebhook::class);
         $webhookInstallator($id);
 
         return $id;
