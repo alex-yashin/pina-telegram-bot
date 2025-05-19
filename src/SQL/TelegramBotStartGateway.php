@@ -28,7 +28,7 @@ class TelegramBotStartGateway extends TableDataGateway
     public function whereSessionId($sessionId)
     {
         return $this->innerJoin(
-            TelegramBotSessionGateway::instance()->on('telegram_bot_start_id', 'id')->onBy('id', $sessionId)
+            TelegramBotSessionGateway::instance()->on('param', 'param')->onBy('id', $sessionId)
         );
     }
 
