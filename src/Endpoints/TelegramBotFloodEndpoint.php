@@ -3,20 +3,21 @@
 namespace PinaTelegramBot\Endpoints;
 
 use Pina\App;
+use Pina\Data\DataCollection;
 use Pina\Http\DelegatedCollectionEndpoint;
-use Pina\Http\Request;
 use PinaTelegramBot\Collections\TelegramBotFloodCollection;
 
 use function Pina\__;
 
 class TelegramBotFloodEndpoint extends DelegatedCollectionEndpoint
 {
-
-    public function __construct(Request $request)
+    protected function getCollectionTitle(): string
     {
-        parent::__construct($request);
-        $this->composer->configure(__('Флуд'), __('Добавить'));
-        $this->collection = App::make(TelegramBotFloodCollection::class);
+        return __('Флуд');
     }
 
+    protected function makeDataCollection(): DataCollection
+    {
+        return App::make(TelegramBotFloodCollection::class);
+    }
 }

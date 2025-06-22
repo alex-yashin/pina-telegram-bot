@@ -6,11 +6,8 @@ use Klev\TelegramBotApi\Methods\SendMessage;
 use Klev\TelegramBotApi\Telegram;
 use Klev\TelegramBotApi\Types\LinkPreviewOptions;
 use Klev\TelegramBotApi\Types\ReplyParameters;
-use Pina\App;
-use Pina\Composers\CollectionComposer;
 use Pina\Data\DataRecord;
 use Pina\Data\Schema;
-use Pina\Http\Request;
 use Pina\Http\RichEndpoint;
 use Pina\InternalErrorException;
 use Pina\Log;
@@ -22,27 +19,17 @@ use function Pina\__;
 
 class TelegramBotChatMessageEndpoint extends RichEndpoint
 {
-    /** @var CollectionComposer  */
-    protected $composer;
-
     public function title()
     {
         return 'Сообщения';
     }
 
-    public function __construct(Request $request)
-    {
-        parent::__construct($request);
-        $this->composer = App::make(CollectionComposer::class);
-        $this->composer->configure(__('Сообщения'), __('Отправить'));
-    }
-
     public function index()
     {
-        $this->composer->index($this->location);
+        $this->makeCollectionComposer($this->title())->index($this->location());
 
         $record = new DataRecord([], $this->getSchema());
-        $form = $this->makeRecordForm($this->location->link('@'), 'post', $record);
+        $form = $this->makeRecordForm($this->location()->link('@'), 'post', $record);
         return $form->wrap($this->makeSidebarWrapper());
     }
 
@@ -53,7 +40,7 @@ class TelegramBotChatMessageEndpoint extends RichEndpoint
 
         $this->send($botId, $chatId, $message);
 
-        return Response::ok()->contentLocation($this->location->link('@@'));
+        return Response::ok()->contentLocation($this->location()->link('@@'));
     }
 
     protected function getSchema()

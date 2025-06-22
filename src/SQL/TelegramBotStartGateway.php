@@ -19,7 +19,7 @@ class TelegramBotStartGateway extends TableDataGateway
     {
         $schema = parent::getSchema();
         $schema->addAutoincrementPrimaryKey();
-        $schema->add('param', 'Код параметра /start', TokenType::class)->setMandatory();
+        $schema->add('param', 'Код параметра /start', TokenType::class)->setMandatory()->tag('title');
         $schema->addUniqueKey(['param']);
         $schema->add('answer', 'Ответ', StringType::class)->setMandatory();
         return $schema;

@@ -21,7 +21,7 @@ class TelegramBotGateway extends TableDataGateway
     {
         $schema = parent::getSchema();
         $schema->addAutoincrementPrimaryKey();
-        $schema->add('username', 'Bot username', StringType::class)->setMandatory();
+        $schema->add('username', 'Bot username', StringType::class)->setMandatory()->tag('title');
         $schema->add('token', 'Bot token', SecretStringType::class)->setMandatory();
         $schema->add('intro', 'Приветственное сообщение', StringType::class)->setMandatory()->setDetailed()
             ->setDescription('Выводится в приватном чате в ответ на команду /start, если параметр не указан');
