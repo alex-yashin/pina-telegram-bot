@@ -84,6 +84,11 @@ class MessageEvent extends Event
         return $this->botId;
     }
 
+    public function getBotUsername(): string
+    {
+        return $this->botUsername;
+    }
+
     public function getUserId()
     {
         return $this->message->from->id;
