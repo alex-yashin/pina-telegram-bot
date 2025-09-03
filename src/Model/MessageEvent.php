@@ -211,11 +211,16 @@ class MessageEvent extends Event
     public function downloadMedias(): array
     {
         $mediaIds = [];
+        $uniqueIds = [];
         if ($this->message->photo) {
-            //фотографии в массиве - это одна фотография, но разных размеров, берем последнюю, как самую большую
-            $file = array_pop($this->message->photo);
-            $mediaIds[] = $this->download($file->file_id);
-            Log::info('telegram', 'file', ['file' => $file, 'media_id' => $mediaIds]);
+            foreach ($this->message->photo as $photo) {
+                if (in_array($photo->file_unique_id, $uniqueIds)) {
+                    continue;
+                }
+                $mediaIds[] = $this->download($photo->file_id);
+                $uniqueIds[] = $photo->file_unique_id;
+                Log::info('telegram', 'file', ['file' => $photo, 'media_id' => $mediaIds, 'file_id' => $photo->file_id, 'file_unique_id' => $photo->file_unique_id, 'width' => $photo->width, 'height' => $photo->height]);
+            }
         }
 
         if ($this->message->document) {
@@ -224,10 +229,14 @@ class MessageEvent extends Event
         }
 
         if ($this->message->reply_to_message && $this->message->reply_to_message->photo) {
-            //фотографии в массиве - это одна фотография, но разных размеров, берем последнюю, как самую большую
-            $file = array_pop($this->message->reply_to_message->photo);
-            $mediaIds[] = $this->download($file->file_id);
-            Log::info('telegram', 'file', ['file' => $file, 'media_id' => $mediaIds]);
+            foreach ($this->message->reply_to_message->photo as $photo) {
+                if (in_array($photo->file_unique_id, $uniqueIds)) {
+                    continue;
+                }
+                $mediaIds[] = $this->download($photo->file_id);
+                $uniqueIds[] = $photo->file_unique_id;
+                Log::info('telegram', 'file', ['file' => $photo, 'media_id' => $mediaIds, 'file_id' => $photo->file_id, 'file_unique_id' => $photo->file_unique_id, 'width' => $photo->width, 'height' => $photo->height]);
+            }
         }
 
         if ($this->message->reply_to_message && $this->message->reply_to_message->document) {
