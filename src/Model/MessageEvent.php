@@ -39,7 +39,7 @@ class MessageEvent extends Event
         $this->botUsername = $botUsername;
         $this->message = $message;
 
-        if (strpos($this->getText(), '/start') !== 0) {
+        if (strpos($this->getText(), '/start') === 0) {
             $this->sessionId = $this->startSession(substr($this->getText(), strlen('/start ')));
         }
 
