@@ -17,6 +17,6 @@ class TelegramBotMessageEndpoint extends DelegatedCollectionEndpoint
 
     protected function makeDataCollection(): DataCollection
     {
-        return new QueryDataCollection(TelegramBotMessageGateway::instance());
+        return new QueryDataCollection(TelegramBotMessageGateway::instance()->orderBy('id', 'desc'));
     }
 }
