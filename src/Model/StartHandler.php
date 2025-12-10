@@ -13,8 +13,7 @@ class StartHandler
             return false;
         }
 
-        $param = substr($message->getText(), strlen('/start '));
-        $message->startSession($param ?? '');
+        $param = trim(substr($message->getText(), strlen('/start ')));
 
         $start = TelegramBotStartGateway::instance()
             ->whereBy('param', $param)
