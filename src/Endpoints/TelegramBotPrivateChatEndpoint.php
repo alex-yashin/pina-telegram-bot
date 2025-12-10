@@ -2,10 +2,10 @@
 
 namespace PinaTelegramBot\Endpoints;
 
-use Pina\App;
 use Pina\Data\DataCollection;
+use Pina\Data\QueryDataCollection;
 use Pina\Http\DelegatedCollectionEndpoint;
-use PinaTelegramBot\Collections\TelegramBotPrivateChatCollection;
+use PinaTelegramBot\SQL\TelegramBotPrivateChatGateway;
 use function Pina\__;
 
 class TelegramBotPrivateChatEndpoint extends DelegatedCollectionEndpoint
@@ -17,6 +17,6 @@ class TelegramBotPrivateChatEndpoint extends DelegatedCollectionEndpoint
 
     protected function makeDataCollection(): DataCollection
     {
-        return App::make(TelegramBotPrivateChatCollection::class);
+        return new QueryDataCollection(TelegramBotPrivateChatGateway::instance());
     }
 }

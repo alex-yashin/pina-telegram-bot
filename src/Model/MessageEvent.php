@@ -11,6 +11,7 @@ use Pina\App;
 use Pina\Events\Event;
 use Pina\Log;
 use PinaMedia\File;
+use PinaTelegramBot\SQL\TelegramBotMessageGateway;
 use PinaTelegramBot\SQL\TelegramBotSessionGateway;
 
 class MessageEvent extends Event
@@ -25,6 +26,8 @@ class MessageEvent extends Event
     /** @var \Klev\TelegramBotApi\Types\Message */
     protected $message;
 
+    protected $mediaIds = [];
+
     protected $isAnswered = false;
 
     protected $sessionId = null;
@@ -35,13 +38,32 @@ class MessageEvent extends Event
         $this->bot = $bot;
         $this->botUsername = $botUsername;
         $this->message = $message;
-        $this->sessionId = TelegramBotSessionGateway::instance()
-            ->whereBy('telegram_bot_id', $this->botId)
-            ->whereBy('chat_id', $this->getChatId())
-            ->whereBy('user_id', $this->getUserId())
-            ->whereNotExpired()
-            ->orderBy('id', 'desc')
-            ->value('id');
+
+        if (strpos($this->getText(), '/start') !== 0) {
+            $this->sessionId = $this->startSession(substr($this->getText(), strlen('/start ')));
+        }
+
+        if (empty($this->sessionId) && $message->reply_to_message && $message->reply_to_message->message_id) {
+            $this->sessionId = TelegramBotMessageGateway::instance()
+                ->whereBy('telegram_bot_id', $this->botId)
+                ->whereBy('chat_id', $this->getChatId())
+                ->whereBy('message_id', $message->reply_to_message->message_id)
+                ->value('telegram_bot_session_id');
+        }
+
+        if (empty($this->sessionId)) {
+            $this->sessionId = TelegramBotSessionGateway::instance()
+                ->whereBy('telegram_bot_id', $this->botId)
+                ->whereBy('chat_id', $this->getChatId())
+                ->whereBy('user_id', $this->getUserId())
+                ->whereNotExpired()
+                ->orderBy('id', 'desc')
+                ->value('id');
+        }
+
+        if (empty($this->sessionId)) {
+            $this->sessionId = $this->startSession('');
+        }
     }
 
     public function queueable(): bool
@@ -210,22 +232,24 @@ class MessageEvent extends Event
 
     public function downloadMedias(): array
     {
-        $mediaIds = [];
+        if (!empty($this->mediaIds)) {
+            return $this->mediaIds;
+        }
         $uniqueIds = [];
         if ($this->message->photo) {
             foreach ($this->message->photo as $photo) {
                 if (in_array($photo->file_unique_id, $uniqueIds)) {
                     continue;
                 }
-                $mediaIds[] = $this->download($photo->file_id);
+                $this->mediaIds[] = $this->download($photo->file_id);
                 $uniqueIds[] = $photo->file_unique_id;
-                Log::info('telegram', 'file', ['file' => $photo, 'media_id' => $mediaIds, 'file_id' => $photo->file_id, 'file_unique_id' => $photo->file_unique_id, 'width' => $photo->width, 'height' => $photo->height]);
+                Log::info('telegram', 'file', ['file' => $photo, 'media_id' => $this->mediaIds, 'file_id' => $photo->file_id, 'file_unique_id' => $photo->file_unique_id, 'width' => $photo->width, 'height' => $photo->height]);
             }
         }
 
         if ($this->message->document) {
-            $mediaIds[]= $this->download($this->message->document->file_id, $this->message->document->file_name);
-            Log::info('telegram', 'file', ['document' => $this->message->document, 'media_id' => $mediaIds]);
+            $this->mediaIds[] = $this->download($this->message->document->file_id, $this->message->document->file_name);
+            Log::info('telegram', 'file', ['document' => $this->message->document, 'media_id' => $this->mediaIds]);
         }
 
         if ($this->message->reply_to_message && $this->message->reply_to_message->photo) {
@@ -233,18 +257,18 @@ class MessageEvent extends Event
                 if (in_array($photo->file_unique_id, $uniqueIds)) {
                     continue;
                 }
-                $mediaIds[] = $this->download($photo->file_id);
+                $this->mediaIds[] = $this->download($photo->file_id);
                 $uniqueIds[] = $photo->file_unique_id;
-                Log::info('telegram', 'file', ['file' => $photo, 'media_id' => $mediaIds, 'file_id' => $photo->file_id, 'file_unique_id' => $photo->file_unique_id, 'width' => $photo->width, 'height' => $photo->height]);
+                Log::info('telegram', 'file', ['file' => $photo, 'media_id' => $this->mediaIds, 'file_id' => $photo->file_id, 'file_unique_id' => $photo->file_unique_id, 'width' => $photo->width, 'height' => $photo->height]);
             }
         }
 
         if ($this->message->reply_to_message && $this->message->reply_to_message->document) {
-            $mediaIds[]= $this->download($this->message->reply_to_message->document->file_id, $this->message->reply_to_message->document->file_name);
-            Log::info('telegram', 'file', ['document' => $this->message->reply_to_message->document, 'media_id' => $mediaIds]);
+            $this->mediaIds[]= $this->download($this->message->reply_to_message->document->file_id, $this->message->reply_to_message->document->file_name);
+            Log::info('telegram', 'file', ['document' => $this->message->reply_to_message->document, 'media_id' => $this->mediaIds]);
         }
 
-        return $mediaIds;
+        return $this->mediaIds;
     }
 
     protected function getMentions()

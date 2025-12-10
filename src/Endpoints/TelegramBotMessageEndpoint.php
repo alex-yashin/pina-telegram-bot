@@ -5,19 +5,18 @@ namespace PinaTelegramBot\Endpoints;
 use Pina\Data\DataCollection;
 use Pina\Data\QueryDataCollection;
 use Pina\Http\DelegatedCollectionEndpoint;
-
-use PinaTelegramBot\SQL\TelegramBotChatGateway;
+use PinaTelegramBot\SQL\TelegramBotMessageGateway;
 use function Pina\__;
 
-class TelegramBotChatEndpoint extends DelegatedCollectionEndpoint
+class TelegramBotMessageEndpoint extends DelegatedCollectionEndpoint
 {
     protected function getCollectionTitle(): string
     {
-        return __('Чаты');
+        return __('Сообщения');
     }
 
     protected function makeDataCollection(): DataCollection
     {
-        return new QueryDataCollection(TelegramBotChatGateway::instance());
+        return new QueryDataCollection(TelegramBotMessageGateway::instance());
     }
 }

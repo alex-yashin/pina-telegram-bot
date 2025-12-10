@@ -15,13 +15,11 @@ use Pina\Response;
 use Pina\Types\StringType;
 use PinaTelegramBot\SQL\TelegramBotGateway;
 
-use function Pina\__;
-
-class TelegramBotChatMessageEndpoint extends RichEndpoint
+class TelegramBotChatSendEndpoint extends RichEndpoint
 {
     public function title()
     {
-        return 'Сообщения';
+        return 'Отправить';
     }
 
     public function index()

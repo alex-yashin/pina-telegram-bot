@@ -2,11 +2,11 @@
 
 namespace PinaTelegramBot\Endpoints;
 
-use Pina\App;
 use Pina\Data\DataCollection;
+use Pina\Data\QueryDataCollection;
 use Pina\Http\DelegatedCollectionEndpoint;
-use PinaTelegramBot\Collections\TelegramBotFloodCollection;
 
+use PinaTelegramBot\SQL\TelegramBotFloodGateway;
 use function Pina\__;
 
 class TelegramBotFloodEndpoint extends DelegatedCollectionEndpoint
@@ -18,6 +18,6 @@ class TelegramBotFloodEndpoint extends DelegatedCollectionEndpoint
 
     protected function makeDataCollection(): DataCollection
     {
-        return App::make(TelegramBotFloodCollection::class);
+        return new QueryDataCollection(TelegramBotFloodGateway::instance());
     }
 }
