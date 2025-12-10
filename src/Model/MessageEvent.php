@@ -32,14 +32,15 @@ class MessageEvent extends Event
 
     protected $sessionId = null;
 
-    public function __construct($botId, Telegram $bot, string $botUsername, \Klev\TelegramBotApi\Types\Message $message)
+    public function __construct($botId, Telegram $bot, string $botUsername, \Klev\TelegramBotApi\Types\Message $message, ?int $sessionId = null)
     {
         $this->botId = $botId;
         $this->bot = $bot;
         $this->botUsername = $botUsername;
         $this->message = $message;
 
-        if (strpos($this->getText(), '/start') === 0) {
+        $this->sessionId = $sessionId;
+        if (empty($this->sessionId) && strpos($this->getText(), '/start') === 0) {
             $this->sessionId = $this->startSession(substr($this->getText(), strlen('/start ')));
         }
 
@@ -224,7 +225,7 @@ class MessageEvent extends Event
 
         $this->isAnswered = true;
 
-        $event = new SentMessageEvent($this->botId, $this->bot, $this->botUsername, $sentMessage);
+        $event = new SentMessageEvent($this->botId, $this->bot, $this->botUsername, $sentMessage, $this->sessionId);
         $event->trigger();
 
         return $event;
