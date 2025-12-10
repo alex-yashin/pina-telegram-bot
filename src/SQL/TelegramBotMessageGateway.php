@@ -29,8 +29,8 @@ class TelegramBotMessageGateway extends TableDataGateway
         $schema->add('message_id', 'ID Сообщения', TokenType::class);
         $schema->add('user_id', 'ID Пользователя в телеграме', TokenType::class)->setDetailed();
         $schema->add('username', 'Пользователь', TokenType::class);
-        $schema->add('message', 'Сообщение', TextType::class)->setDetailed();
-        $schema->add('attachments', 'Вложения', new GalleryRelation(TelegramBotMessageMediaGateway::instance(), 'telegram_bot_message_id'))->setDetailed();
+        $schema->add('message', 'Сообщение', TextType::class);
+        $schema->add('attachments', 'Вложения', new GalleryRelation(TelegramBotMessageMediaGateway::instance(), 'telegram_bot_message_id'));
         $schema->addCreatedAt();
         $schema->addUniqueKey(['telegram_bot_id', 'chat_id', 'message_id']);
         $schema->setStatic();
