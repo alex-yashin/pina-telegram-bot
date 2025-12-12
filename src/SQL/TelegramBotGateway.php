@@ -11,13 +11,16 @@ use PinaTelegramBot\Types\SecretStringType;
 
 class TelegramBotGateway extends TableDataGateway
 {
-    protected static $table = "telegram_bot";
+    public function getTable(): string
+    {
+        return "telegram_bot";
+    }
 
     /**
      * @return Schema
      * @throws \Exception
      */
-    public function getSchema()
+    public function getSchema(): Schema
     {
         $schema = parent::getSchema();
         $schema->addAutoincrementPrimaryKey();

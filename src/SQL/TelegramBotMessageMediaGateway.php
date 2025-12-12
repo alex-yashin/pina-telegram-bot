@@ -9,13 +9,16 @@ use PinaMedia\Types\MediaType;
 
 class TelegramBotMessageMediaGateway extends TableDataGateway
 {
-    protected static $table = "telegram_bot_message_media";
+    public function getTable(): string
+    {
+        return "telegram_bot_message_media";
+    }
 
     /**
      * @return Schema
      * @throws \Exception
      */
-    public function getSchema()
+    public function getSchema(): Schema
     {
         $schema = parent::getSchema();
         $schema->add('telegram_bot_message_id', 'Сообщение', IntegerType::class);

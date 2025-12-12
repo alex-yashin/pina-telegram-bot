@@ -9,13 +9,16 @@ use Pina\Types\TokenType;
 
 class TelegramBotSessionGateway extends TableDataGateway
 {
-    protected static $table = "telegram_bot_session";
+    public function getTable(): string
+    {
+        return "telegram_bot_session";
+    }
 
     /**
      * @return Schema
      * @throws \Exception
      */
-    public function getSchema()
+    public function getSchema(): Schema
     {
         $schema = parent::getSchema();
         $schema->addAutoincrementPrimaryKey();

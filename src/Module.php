@@ -4,6 +4,7 @@ namespace PinaTelegramBot;
 
 use Pina\App;
 use Pina\ModuleInterface;
+use Pina\Router;
 use PinaNotifications\Transports\TransportRegistry;
 use PinaTelegramBot\Endpoints\TelegramBotChatEndpoint;
 use PinaTelegramBot\Endpoints\TelegramBotChatSendEndpoint;
@@ -26,6 +27,30 @@ class Module implements ModuleInterface
 
         MessageEvent::subscribeWithHighPriority(App::load(MessageLogHandler::class));
         SentMessageEvent::subscribeWithHighPriority(App::load(MessageLogHandler::class));
+
+        App::onLoad(Router::class, function (Router $router) {
+            $router
+                ->register('/telegram-webhook', Endpoints\TelegramWebhookEndpoint::class)
+                ->permit('public')
+                ->ignoreCSRF();
+
+            $router->register('telegram-bots', TelegramBotEndpoint::class)->permit('root');
+            $router->register('telegram-bots/:telegram_bot_id/flood', TelegramBotFloodEndpoint::class, ['telegram_bot_id']);
+            $router->register('telegram-bots/:telegram_bot_id/start', TelegramBotStartEndpoint::class, ['telegram_bot_id']);
+
+            $router->register('telegram-bots/:telegram_bot_id/chats', TelegramBotChatEndpoint::class, ['telegram_bot_id']);
+            $router->register('telegram-bots/:telegram_bot_id/chats/:chat_id/send', TelegramBotChatSendEndpoint::class, ['telegram_bot_id', 'chat_id']);
+            $router->register('telegram-bots/:telegram_bot_id/chats/:chat_id/messages', TelegramBotMessageEndpoint::class, ['telegram_bot_id', 'chat_id']);
+            $router->register('telegram-bots/:telegram_bot_id/chats/:chat_id/sessions', TelegramBotSessionEndpoint::class, ['telegram_bot_id', 'chat_id']);
+
+            $router->register('telegram-bots/:telegram_bot_id/private-chats', TelegramBotPrivateChatEndpoint::class, ['telegram_bot_id']);
+            $router->register('telegram-bots/:telegram_bot_id/private-chats/:chat_id/messages', TelegramBotMessageEndpoint::class, ['telegram_bot_id', 'chat_id']);
+            $router->register('telegram-bots/:telegram_bot_id/private-chats/:chat_id/sessions', TelegramBotSessionEndpoint::class, ['telegram_bot_id', 'chat_id']);
+
+            $router->register('telegram-bots/:telegram_bot_id/messages', TelegramBotMessageEndpoint::class, ['telegram_bot_id']);
+            $router->register('telegram-bots/:telegram_bot_id/sessions', TelegramBotSessionEndpoint::class, ['telegram_bot_id']);
+            $router->register('telegram-bots/:telegram_bot_id/sessions/:telegram_bot_session_id/messages', TelegramBotMessageEndpoint::class, ['telegram_bot_id', 'telegram_bot_session_id']);
+        });
     }
 
     public function getPath()
@@ -41,37 +66,6 @@ class Module implements ModuleInterface
     public function getTitle()
     {
         return 'TelegramBot';
-    }
-
-    /**
-     * @return array
-     * @throws \Exception
-     */
-    public function http()
-    {
-        App::router()
-            ->register('/telegram-webhook', Endpoints\TelegramWebhookEndpoint::class)
-            ->permit('public')
-            ->ignoreCSRF();
-
-        App::router()->register('telegram-bots', TelegramBotEndpoint::class)->permit('root');
-        App::router()->register('telegram-bots/:telegram_bot_id/flood', TelegramBotFloodEndpoint::class, ['telegram_bot_id']);
-        App::router()->register('telegram-bots/:telegram_bot_id/start', TelegramBotStartEndpoint::class, ['telegram_bot_id']);
-
-        App::router()->register('telegram-bots/:telegram_bot_id/chats', TelegramBotChatEndpoint::class, ['telegram_bot_id']);
-        App::router()->register('telegram-bots/:telegram_bot_id/chats/:chat_id/send', TelegramBotChatSendEndpoint::class, ['telegram_bot_id', 'chat_id']);
-        App::router()->register('telegram-bots/:telegram_bot_id/chats/:chat_id/messages', TelegramBotMessageEndpoint::class, ['telegram_bot_id', 'chat_id']);
-        App::router()->register('telegram-bots/:telegram_bot_id/chats/:chat_id/sessions', TelegramBotSessionEndpoint::class, ['telegram_bot_id', 'chat_id']);
-
-        App::router()->register('telegram-bots/:telegram_bot_id/private-chats', TelegramBotPrivateChatEndpoint::class, ['telegram_bot_id']);
-        App::router()->register('telegram-bots/:telegram_bot_id/private-chats/:chat_id/messages', TelegramBotMessageEndpoint::class, ['telegram_bot_id', 'chat_id']);
-        App::router()->register('telegram-bots/:telegram_bot_id/private-chats/:chat_id/sessions', TelegramBotSessionEndpoint::class, ['telegram_bot_id', 'chat_id']);
-
-        App::router()->register('telegram-bots/:telegram_bot_id/messages', TelegramBotMessageEndpoint::class, ['telegram_bot_id']);
-        App::router()->register('telegram-bots/:telegram_bot_id/sessions', TelegramBotSessionEndpoint::class, ['telegram_bot_id']);
-        App::router()->register('telegram-bots/:telegram_bot_id/sessions/:telegram_bot_session_id/messages', TelegramBotMessageEndpoint::class, ['telegram_bot_id', 'telegram_bot_session_id']);
-
-        return [];
     }
 
 }

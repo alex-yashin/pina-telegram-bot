@@ -10,13 +10,16 @@ use PinaTelegramBot\Types\TelegramBotType;
 
 class TelegramBotPrivateChatGateway extends TableDataGateway
 {
-    protected static $table = "telegram_bot_private_chat";
+    public function getTable(): string
+    {
+        return "telegram_bot_private_chat";
+    }
 
     /**
      * @return Schema
      * @throws \Exception
      */
-    public function getSchema()
+    public function getSchema(): Schema
     {
         $schema = parent::getSchema();
         $schema->add('telegram_bot_id', 'Телеграм бот', TelegramBotType::class)->setMandatory();

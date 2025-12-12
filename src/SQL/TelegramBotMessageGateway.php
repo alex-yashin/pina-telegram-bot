@@ -5,7 +5,6 @@ namespace PinaTelegramBot\SQL;
 use Pina\Data\Schema;
 use Pina\TableDataGateway;
 use Pina\Types\IntegerType;
-use Pina\Types\StringType;
 use Pina\Types\TextType;
 use Pina\Types\TokenType;
 use PinaMedia\Types\GalleryRelation;
@@ -13,13 +12,16 @@ use PinaTelegramBot\Types\TelegramBotType;
 
 class TelegramBotMessageGateway extends TableDataGateway
 {
-    protected static $table = "telegram_bot_message";
+    public function getTable(): string
+    {
+        return "telegram_bot_message";
+    }
 
     /**
      * @return Schema
      * @throws \Exception
      */
-    public function getSchema()
+    public function getSchema(): Schema
     {
         $schema = parent::getSchema();
         $schema->addAutoincrementPrimaryKey();
