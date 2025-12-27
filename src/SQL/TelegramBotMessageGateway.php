@@ -17,6 +17,11 @@ class TelegramBotMessageGateway extends TableDataGateway
         return "telegram_bot_message";
     }
 
+    public function getCharset(): string
+    {
+        return "utf8mb4";
+    }
+
     /**
      * @return Schema
      * @throws \Exception
