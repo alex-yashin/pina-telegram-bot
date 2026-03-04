@@ -35,7 +35,7 @@ class TelegramBotSessionGateway extends TableDataGateway
 
     public function whereNotExpired()
     {
-        return $this->where($this->getAlias() . '.created_at > date_sub(NOW(), INTERVAL 1 HOUR)');
+        return $this->where($this->getAlias() . '.created_at > date_sub(NOW(), INTERVAL 5 MINUTE)');
     }
 
 }
