@@ -19,8 +19,10 @@ class MessageLogHandler
             'attachments' => array_filter($message->downloadMedias()),
         ];
 
-        $telegramBotMessageId = TelegramBotMessageGateway::instance()->insertGetId($m);
-        TelegramBotMessageGateway::instance()->getSchema()->onUpdate($telegramBotMessageId, $m);
+        $telegramBotMessageId = TelegramBotMessageGateway::instance()->insertIgnoreGetId($m);
+        if ($telegramBotMessageId) {
+            TelegramBotMessageGateway::instance()->getSchema()->onUpdate($telegramBotMessageId, $m);
+        }
 
         return false;
     }
