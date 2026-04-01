@@ -15,7 +15,8 @@ class FloodHandler
 
         if ($text = $this->getFlood($message->getBotId(), $message->getText())) {
             Log::info('telegram', 'Нашли ответ "' . $text . '" на сообщение "'. $message->getText().'"');
-            return $message->answer($text)->getMessageId();
+            $message->answer($text);
+            return true;
         }
 
         return false;

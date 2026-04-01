@@ -2,6 +2,7 @@
 
 namespace PinaTelegramBot\SQL;
 
+use Exception;
 use Pina\Data\Schema;
 use Pina\TableDataGateway;
 use Pina\Types\StringType;
@@ -16,7 +17,7 @@ class TelegramBotStartGateway extends TableDataGateway
 
     /**
      * @return Schema
-     * @throws \Exception
+     * @throws Exception
      */
     public function getSchema(): Schema
     {

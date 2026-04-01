@@ -6,6 +6,7 @@ namespace PinaTelegramBot\Endpoints;
 use Exception;
 use Klev\TelegramBotApi\Telegram;
 use Klev\TelegramBotApi\TelegramException;
+use League\Flysystem\FileExistsException;
 use Pina\Http\Endpoint;
 use Pina\Log;
 use Pina\Response;
@@ -16,7 +17,7 @@ class TelegramWebhookEndpoint extends Endpoint
 {
     /**
      * @return Response
-     * @throws \League\Flysystem\FileExistsException
+     * @throws FileExistsException
      * @throws Exception
      */
     public function store($id)
@@ -31,7 +32,7 @@ class TelegramWebhookEndpoint extends Endpoint
             $bot = new Telegram($config['token']);
             $update = $bot->getWebhookUpdates();
 
-            Log::info('telegram', 'incomming update', ['update' => $update]);
+            Log::info('telegram', 'incoming update', ['update' => $update]);
 
             if ($update->message) {
                 $message = new MessageEvent($id, $bot, $config['username'], $update->message);

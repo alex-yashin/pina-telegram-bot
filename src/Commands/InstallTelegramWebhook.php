@@ -39,7 +39,7 @@ class InstallTelegramWebhook extends Command
         }
     }
 
-    protected function isCorrectWebhook($url)
+    protected function isCorrectWebhook($url): bool
     {
         $host = parse_url($url, PHP_URL_HOST);
         return !empty($host);

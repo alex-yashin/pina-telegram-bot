@@ -2,11 +2,10 @@
 
 namespace PinaTelegramBot\Model;
 
-use Klev\TelegramBotApi\Methods\SendMessage;
+use Exception;
 use Klev\TelegramBotApi\Telegram;
 use Klev\TelegramBotApi\TelegramException;
-use Klev\TelegramBotApi\Types\LinkPreviewOptions;
-use Klev\TelegramBotApi\Types\ReplyParameters;
+use Klev\TelegramBotApi\Types\Message;
 use Pina\App;
 use Pina\Events\Event;
 use Pina\Log;
@@ -16,23 +15,23 @@ use PinaTelegramBot\SQL\TelegramBotSessionGateway;
 
 class MessageEvent extends Event
 {
-    protected $botId = 0;
+    protected int $botId = 0;
 
-    protected $botUsername = '';
+    protected string $botUsername = '';
 
     /** @var Telegram */
     protected $bot;
 
-    /** @var \Klev\TelegramBotApi\Types\Message */
+    /** @var Message */
     protected $message;
 
-    protected $mediaIds = [];
+    protected array $mediaIds = [];
 
-    protected $isAnswered = false;
+    protected bool $isAnswered = false;
 
     protected $sessionId = null;
 
-    public function __construct($botId, Telegram $bot, string $botUsername, \Klev\TelegramBotApi\Types\Message $message, ?int $sessionId = null)
+    public function __construct($botId, Telegram $bot, string $botUsername, Message $message, ?int $sessionId = null)
     {
         $this->botId = $botId;
         $this->bot = $bot;
@@ -157,7 +156,7 @@ class MessageEvent extends Event
         return $this->getRepliedTextLoop($this->message);
     }
 
-    protected function getRepliedTextLoop(\Klev\TelegramBotApi\Types\Message $message)
+    protected function getRepliedTextLoop(Message $message)
     {
         if (is_null($message->reply_to_message)) {
             return '';
@@ -170,7 +169,7 @@ class MessageEvent extends Event
         return $this->getRepliedMessageIdsLoop($this->message);
     }
 
-    protected function getRepliedMessageIdsLoop(\Klev\TelegramBotApi\Types\Message $message): array
+    protected function getRepliedMessageIdsLoop(Message $message): array
     {
         if (is_null($message->reply_to_message)) {
             return [];
@@ -198,37 +197,15 @@ class MessageEvent extends Event
         return $this->sessionId;
     }
 
-    public function answer($text): MessageEvent
+    public function answer($text)
     {
         $chatId = $this->getChatId();
         $replyTo = $this->getMessageId();
 
-        Log::info('telegram', 'Пытаемся отправить сообщение в '. $chatId. ' для ' . $replyTo .': ' .$text);
-        $message = new SendMessage($chatId, $text);
-//        $message->reply_to_message_id = $replyTo;
-        $message->link_preview_options = new LinkPreviewOptions();
-        $message->link_preview_options->is_disabled = true;
-        $message->link_preview_options->url = '';
-        $message->link_preview_options->prefer_small_media = false;
-        $message->link_preview_options->prefer_large_media = false;
-        $message->link_preview_options->show_above_text = false;
-
-        $message->reply_parameters = new ReplyParameters();
-        $message->reply_parameters->message_id = $replyTo;
-        $message->reply_parameters->chat_id = $chatId;
-        $message->reply_parameters->allow_sending_without_reply = true;
-        $message->reply_parameters->quote = '';
-        $message->reply_parameters->quote_parse_mode = 'html';
-        $message->reply_parameters->quote_position = 0;
-
-        $sentMessage = $this->bot->sendMessage($message);
-
-        $this->isAnswered = true;
-
-        $event = new SentMessageEvent($this->botId, $this->bot, $this->botUsername, $sentMessage, $this->sessionId);
+        $event = new TelegramMessageSendingRequest($this->botId, $chatId, $text, $replyTo, $this->sessionId);
         $event->trigger();
 
-        return $event;
+        $this->isAnswered = true;
     }
 
     public function downloadMedias(): array
@@ -301,7 +278,7 @@ class MessageEvent extends Event
      * @param $fileId
      * @return string
      * @throws TelegramException
-     * @throws \Exception
+     * @throws Exception
      */
     protected function download($fileId, $fileName = '')
     {

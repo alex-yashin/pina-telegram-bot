@@ -15,9 +15,9 @@ class TelegramBotCollection  extends DataCollection
         return TelegramBotGateway::instance();
     }
 
-    public function getListSchema(): Schema
+    public function getListSchema($context = []): Schema
     {
-        return parent::getListSchema()->forgetField('token');
+        return parent::getListSchema($context)->forgetField('token');
     }
 
     public function add(array $data, array $context = []): string

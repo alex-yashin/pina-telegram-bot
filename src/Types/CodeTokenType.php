@@ -2,6 +2,7 @@
 
 namespace PinaTelegramBot\Types;
 
+use Exception;
 use Pina\Html;
 use Pina\Types\StringType;
 
@@ -11,7 +12,7 @@ class CodeTokenType extends StringType
     /**
      * @param mixed $value
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function draw($value): string
     {

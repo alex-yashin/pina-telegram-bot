@@ -8,7 +8,7 @@ use PinaNotifications\Transports\TransportRegistry;
 
 class TelegramRecipient implements RecipientInterface
 {
-    protected $chatId;
+    protected string $chatId;
 
     public function __construct(string $chatId)
     {

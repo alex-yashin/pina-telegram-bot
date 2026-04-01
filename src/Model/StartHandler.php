@@ -7,10 +7,10 @@ use PinaTelegramBot\SQL\TelegramBotStartGateway;
 
 class StartHandler
 {
-    public function __invoke(MessageEvent $message): bool
+    public function __invoke(MessageEvent $message)
     {
         if (strpos($message->getText(), '/start') !== 0) {
-            return false;
+            return;
         }
 
         $param = trim(substr($message->getText(), strlen('/start ')));
@@ -22,11 +22,12 @@ class StartHandler
             ->first();
 
         if (!empty($start['answer'])) {
-            return $message->answer($start['answer'])->getMessageId();
+            $message->answer($start['answer']);
+            return;
         }
 
         $intro = TelegramBotGateway::instance()->whereId($message->getBotId())->value('intro');
-        return $message->answer(!empty($intro) ? $intro : $this->getDefaultIntro())->getMessageId();
+        $message->answer(!empty($intro) ? $intro : $this->getDefaultIntro());
     }
 
     protected function getDefaultIntro()

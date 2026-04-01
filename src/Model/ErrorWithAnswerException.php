@@ -2,6 +2,8 @@
 
 namespace PinaTelegramBot\Model;
 
-class ErrorWithAnswerException extends \Exception
+use Exception;
+
+class ErrorWithAnswerException extends Exception
 {
 }
