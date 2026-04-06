@@ -88,6 +88,9 @@ class TelegramBot
             if ($info->url != $webhookUrl) {
                 $webhook = new SetWebhook($webhookUrl);
                 $bot->setWebhook($webhook);
+                Log::info('telegram', 'Webhook updated from '. $info->url. ' to '.$webhookUrl);
+            } else {
+                Log::info('telegram', 'Webhook has address '. $info->url);
             }
         } catch (TelegramException $e) {
             Log::error('telegram', $e->getMessage(), ['url' => $webhookUrl]);
