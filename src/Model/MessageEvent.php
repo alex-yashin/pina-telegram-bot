@@ -198,10 +198,13 @@ class MessageEvent extends Event
         $chatId = $this->getChatId();
         $replyTo = $this->getMessageId();
 
-        $event = new TelegramMessageSendingRequest($this->botId, $chatId, $text, $replyTo, $this->sessionId);
+        $sentMessage = $this->bot->sendMessage($chatId, $text, $replyTo);
+        $this->isAnswered = true;
+
+        $event = new SentMessageEvent($this->botId, $this->bot, $sentMessage, $this->sessionId);
         $event->trigger();
 
-        $this->isAnswered = true;
+        return $event;
     }
 
     public function downloadMedias(): array

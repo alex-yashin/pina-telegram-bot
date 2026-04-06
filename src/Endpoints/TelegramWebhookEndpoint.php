@@ -24,13 +24,12 @@ class TelegramWebhookEndpoint extends Endpoint
         try {
             $telegram = new TelegramBot($id);
 
-            $bot = $telegram->getTelegram();
-            $update = $bot->getWebhookUpdates();
+            $update = $telegram->getTelegram()->getWebhookUpdates();
 
             Log::info('telegram', 'incoming update', ['update' => $update]);
 
             if ($update->message) {
-                $message = new MessageEvent($id, $bot, $update->message);
+                $message = new MessageEvent($id, $telegram, $update->message);
                 $message->trigger();
             }
 
