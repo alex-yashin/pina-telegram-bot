@@ -2,7 +2,6 @@
 
 namespace PinaTelegramBot\Notification;
 
-use Klev\TelegramBotApi\Telegram;
 use Pina\Log;
 use PinaNotifications\Messages\Message;
 use PinaNotifications\Transports\TransportInterface;

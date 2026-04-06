@@ -3,7 +3,6 @@
 namespace PinaTelegramBot\Model;
 
 use Exception;
-use Klev\TelegramBotApi\Telegram;
 use Klev\TelegramBotApi\TelegramException;
 use Klev\TelegramBotApi\Types\Message;
 use Pina\App;
@@ -17,9 +16,7 @@ class MessageEvent extends Event
 {
     protected int $botId = 0;
 
-    protected string $botUsername = '';
-
-    /** @var Telegram */
+    /** @var TelegramBot */
     protected $bot;
 
     /** @var Message */
@@ -31,11 +28,10 @@ class MessageEvent extends Event
 
     protected $sessionId = null;
 
-    public function __construct($botId, Telegram $bot, string $botUsername, Message $message, ?int $sessionId = null)
+    public function __construct($botId, TelegramBot $bot, Message $message, ?int $sessionId = null)
     {
         $this->botId = $botId;
         $this->bot = $bot;
-        $this->botUsername = $botUsername;
         $this->message = $message;
 
         $this->sessionId = $sessionId;
@@ -98,7 +94,7 @@ class MessageEvent extends Event
 
     public function isMentioned(): bool
     {
-        return  in_array('@' . $this->botUsername, $this->getMentions());
+        return  in_array('@' . $this->bot->getUsername(), $this->getMentions());
     }
 
     public function getBotId(): int
@@ -108,7 +104,7 @@ class MessageEvent extends Event
 
     public function getBotUsername(): string
     {
-        return $this->botUsername;
+        return $this->bot->getUsername();
     }
 
     public function getUserId()
@@ -290,7 +286,7 @@ class MessageEvent extends Event
             }
         }
         $tmpPath = App::tmp() . '/' . uniqid('download', true);
-        $this->bot->downloadFile($fileId, $tmpPath);
+        $this->bot->getTelegram()->downloadFile($fileId, $tmpPath);
         $mediaFile = new File($tmpPath, rand(1, 100000) . $suffix, null, $fileName);
         $mediaFile->moveToStorage();
         return $mediaFile->saveMeta();
