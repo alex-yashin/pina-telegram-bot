@@ -3,7 +3,7 @@
 namespace PinaTelegramBot\Notification;
 
 use Pina\Log;
-use PinaNotifications\Messages\Message;
+use PinaNotifications\Messages\MessageInterface;
 use PinaNotifications\Transports\TransportInterface;
 use PinaTelegramBot\SQL\TelegramBotChatGateway;
 use PinaTelegramBot\SQL\TelegramBotGateway;
@@ -12,7 +12,7 @@ use PinaTelegramBot\Model\TelegramMessageSendingRequest;
 
 class Transport implements TransportInterface
 {
-    public function send(string $address, Message $message, $replyTo = null): bool
+    public function send(string $address, MessageInterface $message, $replyTo = null): bool
     {
         if (empty($address)) {
             return false;
@@ -47,7 +47,7 @@ class Transport implements TransportInterface
             ->value('id');
     }
 
-    public function sendMessageToChat($botId, $chatId, Message $message, $replyTo = null): bool
+    public function sendMessageToChat($botId, $chatId, MessageInterface $message, $replyTo = null): bool
     {
         $text = trim($message->getTitle() . ' ' . $message->getText(). ' ' . $message->getLink());
 

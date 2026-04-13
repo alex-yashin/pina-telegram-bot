@@ -2,7 +2,7 @@
 
 namespace PinaTelegramBot\Notification;
 
-use PinaNotifications\Messages\Message;
+use PinaNotifications\Messages\MessageInterface;
 use PinaNotifications\Recipients\RecipientInterface;
 use PinaNotifications\Transports\TransportRegistry;
 
@@ -15,7 +15,7 @@ class TelegramRecipient implements RecipientInterface
         $this->chatId = $chatId;
     }
 
-    public function notify(Message $message, $replyTo = null): bool
+    public function notify(MessageInterface $message, $replyTo = null): bool
     {
         /** @var Transport $transport */
         $transport = TransportRegistry::get('telegram');
