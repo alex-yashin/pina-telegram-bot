@@ -22,8 +22,8 @@ class TelegramBotMessageMediaGateway extends TableDataGateway
     public function getSchema(): Schema
     {
         $schema = parent::getSchema();
-        $schema->add('telegram_bot_message_id', 'Сообщение', IntegerType::class);
-        $schema->add('media_id', 'Медиа', MediaType::class);
+        $schema->add('telegram_bot_message_id', 'Сообщение', IntegerType::class)->setNullable(false);
+        $schema->add('media_id', 'Медиа', MediaType::class)->setNullable(false);
         $schema->setPrimaryKey(['telegram_bot_message_id', 'media_id']);
         $schema->add('order', 'Порядок', IntegerType::class);
         return $schema;
