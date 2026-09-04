@@ -48,7 +48,7 @@ class TelegramBot
         return TelegramBotGateway::instance()->whereId($this->id)->value('username');
     }
 
-    public function sendMessage(string $chatId, string $text, int $replyTo = null): Message
+    public function sendMessage(string $chatId, string $text, ?int $replyTo = null): Message
     {
         $message = new SendMessage($chatId, $text);
 //        $message->reply_to_message_id = $replyTo;
